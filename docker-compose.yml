@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1324
+      POSTGRES_DB: vacancies_db
+    volumes:
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=7447866613:AAFJpPQ4RlloPsyzGHkr9lez5WFm21xepVA
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  parser:
+    build:
+      context: .
+      dockerfile: Dockerfile.parser
+    depends_on:
+      - db
+    volumes:
+      - .:/app
